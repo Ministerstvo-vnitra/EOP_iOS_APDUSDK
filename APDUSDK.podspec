@@ -11,4 +11,5 @@ Pod::Spec.new do |s|
   s.ios.vendored_frameworks = s.name.to_s + '.framework'
   s.source           = { :http => s.homepage.to_s + '/raw/master/builds/' + s.name.to_s + '_' + s.version.to_s + '.zip' }
   s.exclude_files = "Classes/Exclude"
+  s.dependency 'APDUSender', '~> 0.2.4'
 end

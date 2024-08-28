@@ -1,0 +1,231 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name APDUSDK
+@_exported import APDUSDK
+import APDUSenderFramework
+import AheadTLV
+import CardConnectionWrapper
+import Compression
+import CoreBluetooth
+import Foundation
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public protocol UnverifyDelegate : APDUSDK.GeneralDelegate {
+  func onSuccessUnverify()
+}
+public enum Applets : Swift.String {
+  case ProIdQ
+  case EOP
+  public static let allValues: [APDUSDK.Applets]
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol ResetDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess()
+}
+public enum KeyMapping : Swift.UInt8 {
+  case def
+  case signature
+  case exchange
+  case remapped
+  case valid
+  public init?(rawValue: Swift.UInt8)
+  public typealias RawValue = Swift.UInt8
+  public var rawValue: Swift.UInt8 {
+    get
+  }
+}
+public enum AlgorithmID : Swift.UInt8 {
+  case rsaSha224iso97962padding
+  case rsaSha256iso97962padding
+  case rsaSha224pkcs1padding
+  case rsaSha256pkcs1padding
+  case rsaSha384pkcs1padding
+  case rsaSha512pkcs1padding
+  case rsaSha1rc2409padding
+  case rsaSha224rfc2409padding
+  case rsaSha256rfc2409padding
+  case rsaSha224pssPadding
+  case rsaSha256pssPadding
+  case rsaSha384pssPadding
+  case rsaSha512pssPadding
+  case ecdsaSha224
+  case ecdsaSha256
+  case ecdsaSha384
+  case ecdsaSha512
+  public init?(rawValue: Swift.UInt8)
+  public typealias RawValue = Swift.UInt8
+  public var rawValue: Swift.UInt8 {
+    get
+  }
+}
+public protocol CardIdDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: [Swift.UInt8])
+}
+public protocol ATRDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: [Swift.UInt8])
+}
+public protocol PublicKeyDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: Security.SecKey)
+}
+public protocol CertificateDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: Security.SecCertificate)
+}
+@_hasMissingDesignatedInitializers public class APDUProvider {
+  @objc deinit
+  public static func initialize(cardConnection: any CardConnectionWrapper.ProvidingCardConnection, delegate: any APDUSDK.APDUProviderInstanceDelegate)
+  public static func getInstance() throws -> APDUSDK.APDUProvider
+  public func reset(delegate: any APDUSDK.ResetDelegate)
+  public func getATR(delegate: any APDUSDK.ATRDelegate)
+  public func getCardId(delegate: any APDUSDK.CardIdDelegate)
+  public func getContainers(delegate: any APDUSDK.ContainerArrayDelegate)
+  public func getCertificate(container: APDUSDK.Container, delegate: any APDUSDK.CertificateDelegate)
+  public func getPinInfo(pinReference: APDUSDK.VerifyCodes, delegate: any APDUSDK.PinInfoDelegate)
+  public func verify(pinReferece: APDUSDK.VerifyCodes, pin: [Swift.UInt8], generateSessionPin: Swift.Bool, delegate: any APDUSDK.VerifyDelegate)
+  public func verifyUsingSessionPin(pinReference: APDUSDK.VerifyCodes, sessionPin: [Swift.UInt8], delegate: any APDUSDK.VerifyUsingSessionPinDelegate)
+  public func unverify(pinReference: APDUSDK.VerifyCodes, delegate: any APDUSDK.UnverifyDelegate)
+  public func isVerified(pinReference: APDUSDK.VerifyCodes, delegate: any APDUSDK.IsVerifiedDelegate)
+  public func getPublicKey(container: APDUSDK.Container, delegate: any APDUSDK.PublicKeyDelegate)
+  public func signData(container: APDUSDK.Container, data: [Swift.UInt8], algID: APDUSDK.AlgorithmID, delegate: any APDUSDK.SignDelegate)
+}
+@_hasMissingDesignatedInitializers public class PinInfo {
+  public var pinReference: APDUSDK.VerifyCodes
+  public var pinLength: Swift.UInt8
+  public var pinMaxLength: Swift.UInt8
+  public var pinMinLength: Swift.UInt8
+  public var pinTryLimit: Swift.UInt8
+  public var allowUnblock: Swift.Bool
+  public var pinUnblockPinReference: Swift.UInt8
+  public var allowPinChange: Swift.Bool
+  public var forcePinChangeAtFirstUse: Swift.Bool
+  public var sessionAllowed: Swift.Bool
+  @objc deinit
+}
+public protocol APDUProviderInstanceDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: APDUSDK.APDUProvider)
+}
+public protocol SignDelegate : APDUSDK.GeneralDelegate {
+  func onVerifyNeeded(pinReference: APDUSDK.VerifyCodes, selfProvider: APDUSDK.APDUProvider, continueSigning: @escaping () -> Swift.Void)
+  func onSuccessSign(data: [Swift.UInt8])
+}
+public protocol VerifyDelegate : APDUSDK.GeneralDelegate {
+  func onSuccessVerify()
+  func onSuccessSessionPin(result: [Swift.UInt8])
+}
+@_hasMissingDesignatedInitializers public class AuthenticationTemplate {
+  public static let type: Swift.UInt8
+  @objc deinit
+}
+public protocol VerifyUsingSessionPinDelegate : APDUSDK.GeneralDelegate {
+  func onSuccessVerifyUsingSessionPin()
+}
+public protocol ContainerArrayDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: [APDUSDK.Container])
+}
+public enum Errors : Swift.Error {
+  case invalidArgument(message: Swift.String)
+  case wrongStatusWord(statusWord: APDUSenderFramework.StatusWord)
+  case notInitialized
+  case invalidCardSignature
+  case invalidData
+  case appletNotActivated
+  case appletBlocked
+  case unexpectedError(innerError: any Swift.Error)
+}
+public protocol IsVerifiedDelegate : APDUSDK.GeneralDelegate {
+  func onResult(isVerified: Swift.Bool, triesLeft: Swift.Int?)
+}
+@_hasMissingDesignatedInitializers public class Container {
+  public var containerName: Swift.String? {
+    get
+  }
+  public var keyType: APDUSDK.KeyType {
+    get
+  }
+  public var keyUsage: Swift.Set<APDUSDK.KeyUsage> {
+    get
+  }
+  public var dynamicFlag: Swift.Set<APDUSDK.KeyMapping> {
+    get
+  }
+  public var wSigKeySizeBits: Swift.UInt16? {
+    get
+  }
+  public var wKeyExchangeKeySizeBits: Swift.UInt16? {
+    get
+  }
+  @objc deinit
+}
+public protocol PinInfoDelegate : APDUSDK.GeneralDelegate {
+  func onSuccess(result: APDUSDK.PinInfo)
+}
+public protocol GeneralDelegate {
+  func onFailed(statusWord: APDUSenderFramework.StatusWord)
+  func onFailed(stringConvertible: any Swift.CustomStringConvertible)
+  func onFailed(error: APDUSDK.Errors)
+}
+public enum KeyUsage : Swift.UInt8 {
+  case none
+  case sign
+  case decrypt
+  case auth
+  case sscd
+  case allowKeyGen
+  case allowKeyImp
+  public init?(rawValue: Swift.UInt8)
+  public typealias RawValue = Swift.UInt8
+  public var rawValue: Swift.UInt8 {
+    get
+  }
+}
+public enum KeyType : Swift.UInt8 {
+  case rsa1024
+  case rsa1536
+  case rsa2048
+  case rsa3072
+  case rsa4096
+  case ecc224
+  case ecc256
+  case ecc384
+  case ecc512
+  case ecc521
+  public static func isElliptic(keyType: APDUSDK.KeyType) -> Swift.Bool
+  public init?(rawValue: Swift.UInt8)
+  public typealias RawValue = Swift.UInt8
+  public var rawValue: Swift.UInt8 {
+    get
+  }
+}
+public enum VerifyCodes : Swift.UInt8 {
+  case pin
+  case puk
+  case qpin
+  public init?(rawValue: Swift.UInt8)
+  public typealias RawValue = Swift.UInt8
+  public var rawValue: Swift.UInt8 {
+    get
+  }
+}
+extension APDUSDK.Applets : Swift.Equatable {}
+extension APDUSDK.Applets : Swift.Hashable {}
+extension APDUSDK.Applets : Swift.RawRepresentable {}
+extension APDUSDK.KeyMapping : Swift.Equatable {}
+extension APDUSDK.KeyMapping : Swift.Hashable {}
+extension APDUSDK.KeyMapping : Swift.RawRepresentable {}
+extension APDUSDK.AlgorithmID : Swift.Equatable {}
+extension APDUSDK.AlgorithmID : Swift.Hashable {}
+extension APDUSDK.AlgorithmID : Swift.RawRepresentable {}
+extension APDUSDK.KeyUsage : Swift.Equatable {}
+extension APDUSDK.KeyUsage : Swift.Hashable {}
+extension APDUSDK.KeyUsage : Swift.RawRepresentable {}
+extension APDUSDK.KeyType : Swift.Equatable {}
+extension APDUSDK.KeyType : Swift.Hashable {}
+extension APDUSDK.KeyType : Swift.RawRepresentable {}
+extension APDUSDK.VerifyCodes : Swift.Equatable {}
+extension APDUSDK.VerifyCodes : Swift.Hashable {}
+extension APDUSDK.VerifyCodes : Swift.RawRepresentable {}
